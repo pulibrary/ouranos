@@ -39,6 +39,7 @@ commands:
           keys:
             - ouranos-bundle-{{ checksum "Gemfile.lock" }}
             - ouranos-bundle-
+
   setup-node:
     description: "Install the correct release of NodeJS and install the JavaScript package dependencies"
     steps:
@@ -115,6 +116,9 @@ jobs:
       - setup-bundler
       - setup-gems
       - run: bundle exec rspec
+      - store_artifacts:
+          path: '~/ouranos/coverage'
+          destination: coverage
 
 workflows:
   ci:
