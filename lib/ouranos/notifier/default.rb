@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'heaven/comparison/default'
+require 'ouranos/comparison/default'
 
-module Heaven
+module Ouranos
   module Notifier
     # The class that all notifiers inherit from
     class Default
@@ -146,7 +146,7 @@ module Heaven
       end
 
       def changes
-        Heaven::Comparison::Default.new(comparison).changes(commit_change_limit)
+        Ouranos::Comparison::Default.new(comparison).changes(commit_change_limit)
       end
 
       def commit_change_limit
@@ -158,11 +158,11 @@ module Heaven
       end
 
       def last_known_revision
-        Heaven.redis.get("#{name_with_owner}-#{environment}-revision")
+        Ouranos.redis.get("#{name_with_owner}-#{environment}-revision")
       end
 
       def record_revision
-        Heaven.redis.set("#{name_with_owner}-#{environment}-revision", sha)
+        Ouranos.redis.set("#{name_with_owner}-#{environment}-revision", sha)
       end
 
       def post!

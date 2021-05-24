@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-require 'ouranos/provider/default_provider'
-require 'ouranos/provider/capistrano'
-require 'ouranos/provider/bundler_capistrano'
-require 'ouranos/provider/shell'
-
 module Ouranos
   # A dispatcher for provider identification
   module Provider
+    autoload(:DefaultProvider, Rails.root.join('lib', 'ouranos', 'provider', 'default_provider'))
+    autoload(:Capistrano, Rails.root.join('lib', 'ouranos', 'provider', 'capistrano'))
+    autoload(:BundlerCapistrano, Rails.root.join('lib', 'ouranos', 'provider', 'bundler_capistrano'))
+    autoload(:Shell, Rails.root.join('lib', 'ouranos', 'provider', 'shell'))
+
     PROVIDERS ||= {
       'capistrano' => Capistrano,
       'bundler_capistrano' => BundlerCapistrano,

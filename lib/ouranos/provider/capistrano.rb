@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require Rails.root.join('lib', 'ouranos', 'provider', 'default_provider')
+
 module Ouranos
   # Top-level module for providers.
   module Provider

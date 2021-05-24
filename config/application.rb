@@ -20,5 +20,7 @@ module Ouranos
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+
+    require Rails.root.join('lib', 'ouranos')
   end
 end
