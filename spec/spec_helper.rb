@@ -5,9 +5,23 @@
 # this file to always be loaded, without a need to explicitly require it in any
 # files.
 
-require 'pry-byebug'
 require 'database_cleaner/active_record'
+require 'pry-byebug'
+require 'simplecov'
 require 'webmock/rspec'
+
+SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new(
+  [
+    SimpleCov::Formatter::HTMLFormatter
+  ]
+)
+
+SimpleCov.coverage_dir(File.join(ENV["CIRCLE_ARTIFACTS"], "coverage")) if ENV["CIRCLE_ARTIFACTS"]
+SimpleCov.start "rails" do
+  add_filter "app/mailers/application_mailer.rb"
+  add_filter "config"
+  add_filter "spec"
+end
 
 #
 # Given that it is always loaded, you are encouraged to keep this file as
