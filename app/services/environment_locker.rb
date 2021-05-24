@@ -39,11 +39,11 @@ class EnvironmentLocker
     redis.get(redis_key) || UNKNOWN_ACTOR
   end
 
-  private
-
   def redis
     @redis ||= Ouranos.redis
   end
+
+  private
 
   def redis_key
     [name_with_owner, environment, "lock"].join("-")

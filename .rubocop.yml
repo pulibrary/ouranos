@@ -27,6 +27,8 @@ Metrics/BlockLength:
     - 'spec/lib/ouranos/comparison/linked_spec.rb'
     - 'spec/lib/ouranos/notifier/slack_spec.rb'
     - 'spec/lib/ouranos/provider/default_provider_spec.rb'
+    - 'spec/requests/events_spec.rb'
+    - 'spec/services/environment_locker_spec.rb'
 
 Metrics/MethodLength:
   Exclude:
@@ -38,6 +40,8 @@ Metrics/MethodLength:
     - 'lib/ouranos/notifier/default.rb'
     - 'app/models/deployment/credentials.rb'
     - 'spec/support/helpers/deployment_status_helper.rb'
+    - 'spec/support/helpers/gist_helper.rb'
+    - 'spec/support/helpers/meta_helper.rb'
 
 RSpec/ExampleLength:
   Exclude:
@@ -46,6 +50,7 @@ RSpec/ExampleLength:
     - 'spec/lib/ouranos/notifier/slack_spec.rb'
     - 'spec/lib/ouranos/comparison/default_spec.rb'
     - 'spec/lib/ouranos/comparison/linked_spec.rb'
+    - 'spec/services/environment_locker_spec.rb'
 
 RSpec/VerifiedDoubles:
   Exclude:
