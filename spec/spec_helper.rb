@@ -7,6 +7,7 @@
 
 require 'pry-byebug'
 require 'database_cleaner/active_record'
+require 'webmock/rspec'
 
 #
 # Given that it is always loaded, you are encouraged to keep this file as
@@ -108,3 +109,5 @@ RSpec.configure do |config|
     end
   end
 end
+
+WebMock.disable_net_connect!(allow_localhost: true)

@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-require 'ouranos/notifier/default'
-require 'ouranos/notifier/slack'
-
 module Ouranos
   # The Notifier module
   module Notifier
+    autoload(:Default, Rails.root.join('lib', 'ouranos', 'notifier', 'default'))
+    autoload(:Slack, Rails.root.join('lib', 'ouranos', 'notifier', 'slack'))
+
     def self.for(payload)
       if slack?
         ::Ouranos::Notifier::Slack.new(payload)

@@ -5,8 +5,11 @@ A Capistrano-driven deployment service build using [atmos/heaven](https://github
 
 ## Dependencies
 
- * Ruby 2.7.3 or 2.6.7
- * Bundler 2.2.17
+ * [Ruby](https://www.ruby-lang.org/en/downloads/) 2.7.3 or 2.6.7
+ * [Node.js](https://nodejs.org/en/) 14.16.1
+ * [Yarn](https://yarnpkg.com/getting-started/install) 1.22.10
+ * [Redis](https://redis.io/)
+   * Start Redis with `brew services start redis` on macOS, or if you're on certain Linuxes, you can do this via `sudo service redis-server start`.
 
 ## Getting Started
 
@@ -20,6 +23,12 @@ bundle exec webpacker-dev-server
 ```
 
 ## Development
+
+### Lint using RuboCop
+
+```bash
+bundle exec rubocop
+```
 
 ### Executing the Ruby Test Suites
 

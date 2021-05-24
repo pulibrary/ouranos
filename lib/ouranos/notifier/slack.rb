@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
-require 'heaven/comparison/linked'
+require 'ouranos/comparison/linked'
+require 'ouranos/notifier/default'
 
-module Heaven
+module Ouranos
   module Notifier
     # A notifier for Slack
     class Slack < Notifier::Default
@@ -27,17 +28,17 @@ module Heaven
 
       def default_message
         message = output_link("##{deployment_number}")
-        message << " : #{user_link}"
+        message += " : #{user_link}"
         case state
         when 'success'
-          message << "'s #{environment} deployment of #{repository_link} is done! "
+          message + "'s #{environment} deployment of #{repository_link} is done! "
         when 'failure'
-          message << "'s #{environment} deployment of #{repository_link} failed. "
+          message + "'s #{environment} deployment of #{repository_link} failed. "
         when 'error'
-          message << "'s #{environment} deployment of #{repository_link} has errors. #{ascii_face} "
-          message << description unless /Deploying from Heaven/.match?(description)
+          message += "'s #{environment} deployment of #{repository_link} has errors. #{ascii_face} "
+          message + description unless /Deploying from Ouranos/.match?(description)
         when 'pending'
-          message << " is deploying #{repository_link("/tree/#{ref}")} to #{environment} #{compare_link}"
+          message + " is deploying #{repository_link("/tree/#{ref}")} to #{environment} #{compare_link}"
         else
           Rails.logger.error("Unhandled deployment state, #{state}")
         end
@@ -48,7 +49,7 @@ module Heaven
       end
 
       def changes
-        Heaven::Comparison::Linked.new(comparison, name_with_owner).changes(commit_change_limit)
+        Ouranos::Comparison::Linked.new(comparison, name_with_owner).changes(commit_change_limit)
       end
 
       def compare_link
