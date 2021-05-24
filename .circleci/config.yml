@@ -1,0 +1,127 @@
+---
+version: 2.1
+executors:
+  ouranos-executor:
+    docker:
+      - image: circleci/ruby:2.7.3-node-browsers
+        environment:
+          BUNDLER_VERSION: 2.2.17
+          BUNDLE_JOBS: 3
+          BUNDLE_RETRY: 3
+          BUNDLE_PATH: vendor/bundle
+          RAILS_ENV: test
+          lando_ouranos_database_creds_user: "ouranos"
+      - image: postgres:10.17-alpine
+        environment:
+          POSTGRES_USER: ouranos
+          POSTGRES_DB: ouranos_test
+          POSTGRES_HOST_AUTH_METHOD: trust
+    working_directory: ~/ouranos
+
+commands:
+  setup-bundler:
+    description: "Install correct version of bundler and load from cache or bundle install"
+    steps:
+      - run: sudo apt-get update
+      - run:
+          name: Configure Bundler
+          command: |
+            echo 'export BUNDLER_VERSION=$(cat Gemfile.lock | tail -1 | tr -d " ")' >> $BASH_ENV
+            source $BASH_ENV
+            gem install bundler
+
+      - run:
+          name: Which bundler?
+          command: bundle -v
+
+      - restore_cache:
+          keys:
+            - ouranos-bundle-{{ checksum "Gemfile.lock" }}
+            - ouranos-bundle-
+  setup-node:
+    description: "Install the correct release of NodeJS and install the JavaScript package dependencies"
+    steps:
+      - run:
+          name: Install node@lts/erbium (need right version for `yarn`)
+          command: |
+            set +e
+            touch $BASH_ENV
+            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
+            echo 'export NVM_DIR="$HOME/.nvm"' >> $BASH_ENV
+            echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> $BASH_ENV
+            echo 'nvm install lts/erbium' >> $BASH_ENV
+            echo 'nvm alias default lts/erbium' >> $BASH_ENV
+
+      - run:
+          name: Check current version of NodeJS
+          command: node -v
+
+      - restore_cache:
+          name: Restore Yarn Package Cache
+          keys:
+            - ouranos-node-{{ checksum "yarn.lock" }}
+
+      - run:
+          name: Install the NPM package dependencies
+          command: yarn install --frozen-lockfile
+
+      - save_cache:
+          name: Save Yarn Package Cache
+          key: ouranos-node-{{ checksum "yarn.lock" }}
+          paths:
+            - ~/.cache/yarn
+
+  setup-gems:
+    description: "Install Gem dependencies using Bundler"
+    steps:
+      - run:
+          name: Bundle Install
+          command: bundle check || bundle install
+
+      - save_cache:
+          key: ouranos-bundle-{{ checksum "Gemfile.lock" }}
+          paths:
+            - vendor/bundle
+
+jobs:
+  build:
+    executor: ouranos-executor
+    steps:
+      - attach_workspace:
+          at: '~/ouranos'
+      - checkout
+      - setup-bundler
+      - setup-node
+      - setup-gems
+      - persist_to_workspace:
+          root: '~/ouranos'
+          paths: '*'
+
+  lint:
+    executor: ouranos-executor
+    steps:
+      - attach_workspace:
+          at: '~/ouranos'
+      - setup-bundler
+      - setup-gems
+      - run: bundle exec rubocop
+
+  test:
+    executor: ouranos-executor
+    steps:
+      - attach_workspace:
+          at: '~/ouranos'
+      - setup-bundler
+      - setup-gems
+      - run: bundle exec rspec
+
+workflows:
+  ci:
+    jobs:
+      - build
+      - lint:
+         requires:
+          - build
+      - test:
+         requires:
+          - build
