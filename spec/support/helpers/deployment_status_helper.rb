@@ -30,30 +30,43 @@ module DeploymentStatusHelper
   end
 
   def stub_deploy_statuses
-    deployment_results = {
-      body: StubDeployment.new("atmos/my-robot", 721),
-      status: 200,
-      headers: {}
-    }
     stub_request(:get, deployment_url)
-      .to_return(deployment_results)
+      .to_return(
+        headers: {
+          'Content-Type': 'application/vnd.github.v3+json'
+        },
+        status: 200,
+        body: {
+          rels: {
+            statuses: {
+              href: 'https://api.github.com/repos/atmos/my-robot/deployments/721/statuses'
+            }
+          }
+        }.to_json
+      )
 
     extra_params = {
       "target_url" => "https://gist.github.com/cd520d99c3087f2d18b4",
-      "description" => "Deploying from Heaven v#{Heaven::VERSION}"
+      "description" => "Deploying from Heaven v#{Ouranos::VERSION}"
     }
 
     stub_request(:post, deployment_url("/statuses"))
-      .with(body: extra_params.merge("state" => "pending").to_json)
-      .to_return(status: 201, body: {}, headers: {})
+      .with(
+        body: extra_params.merge("state" => "pending").to_json
+      )
+      .to_return(
+        headers: {},
+        status: 201,
+        body: {}.to_json
+      )
 
     stub_request(:post, deployment_url("/statuses"))
       .with(body: extra_params.merge("state" => "failure").to_json)
-      .to_return(status: 201, body: {}, headers: {})
+      .to_return(status: 201, body: {}.to_json, headers: {})
 
     stub_request(:post, deployment_url("/statuses"))
       .with(body: extra_params.merge("state" => "success").to_json)
-      .to_return(status: 201, body: {}, headers: {})
+      .to_return(status: 201, body: {}.to_json, headers: {})
   end
 
   ::RSpec.configure do |config|

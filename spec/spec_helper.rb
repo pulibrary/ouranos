@@ -8,6 +8,7 @@
 require 'database_cleaner/active_record'
 require 'pry-byebug'
 require 'simplecov'
+require 'socket'
 require 'webmock/rspec'
 
 SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new(
