@@ -36,11 +36,13 @@ class EventsController < ApplicationController
   end
 
   def event
-    request_form_headers[GITHUB_EVENT_HEADER]
+    # request_form_headers[GITHUB_EVENT_HEADER]
+    request.headers[GITHUB_EVENT_HEADER]
   end
 
   def delivery
-    request_form_headers[GITHUB_DELIVERY_HEADER]
+    # request_form_headers[GITHUB_DELIVERY_HEADER]
+    request.headers[GITHUB_DELIVERY_HEADER]
   end
 
   def event_params

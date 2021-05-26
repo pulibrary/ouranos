@@ -29,6 +29,7 @@ Metrics/BlockLength:
     - 'spec/lib/ouranos/provider/default_provider_spec.rb'
     - 'spec/requests/events_spec.rb'
     - 'spec/services/environment_locker_spec.rb'
+    - 'spec/requests/site_spec.rb'
 
 Metrics/MethodLength:
   Exclude:

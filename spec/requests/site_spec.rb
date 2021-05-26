@@ -2,17 +2,35 @@
 require "rails_helper"
 
 describe "Visiting in a browser", type: :request do
+  let(:github_meta_url) { "https://api.github.com/meta" }
+  let(:headers) do
+    {
+      "Accept" => "application/json",
+      "Content-Type" => "application/json"
+    }
+  end
+
   before do
-    send_and_accept_json
-    stub_meta
+    stub_request(:get, github_meta_url)
+      .to_return(
+        status: 200,
+        headers: {
+          "Content-Type" => "application/vnd.github.v3+json"
+        },
+        body: {
+          hooks: [
+            "192.30.252.0/22"
+          ]
+        }.to_json
+      )
   end
 
   describe "GET /" do
     it "redirects to the GitHub repository" do
-      get "/"
+      get("/", headers: headers)
 
-      expect(last_response).to be_redirect
-      expect(last_response.headers["Location"]).to eq(
+      expect(response).to be_redirect
+      expect(response.headers["Location"]).to eq(
         "https://github.com/pulibrary/ouranos"
       )
     end
