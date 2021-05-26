@@ -9,11 +9,11 @@ class LockReceiver
 
   def run!
     if locker.lock?
-      Resque.enqueue(Heaven::Jobs::EnvironmentLock, lock_params)
+      Resque.enqueue(Ouranos::Jobs::EnvironmentLock, lock_params)
     elsif locker.unlock?
-      Resque.enqueue(Heaven::Jobs::EnvironmentUnlock, lock_params)
+      Resque.enqueue(Ouranos::Jobs::EnvironmentUnlock, lock_params)
     elsif locker.locked?
-      Resque.enqueue(Heaven::Jobs::EnvironmentLockedError, lock_params)
+      Resque.enqueue(Ouranos::Jobs::EnvironmentLockedError, lock_params)
     end
   end
 
