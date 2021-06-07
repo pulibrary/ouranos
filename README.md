@@ -1,7 +1,9 @@
 # Ouranos
-[![CircleCI](https://circleci.com/gh/jrgriffiniii/ouranos.svg?style=svg)](https://circleci.com/gh/jrgriffiniii/ouranos)
+![Image of the Greek God Ouranos, father of the Titans](./ouranos.png)
 
-A Capistrano-driven deployment service build using [atmos/heaven](https://github.com/atmos/heaven.git).
+[![CircleCI](https://circleci.com/gh/pulibrary/ouranos.svg?style=svg)](https://circleci.com/gh/pulibrary/ouranos)
+
+A Capistrano-driven deployment service built using [atmos/heaven](https://github.com/atmos/heaven.git).
 
 ## Dependencies
 
