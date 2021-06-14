@@ -28,6 +28,7 @@ Metrics/BlockLength:
     - 'spec/requests/site_spec.rb'
     - 'spec/services/environment_locker_spec.rb'
     - 'spec/models/deployment/output_spec.rb'
+    - 'spec/lib/ouranos/jobs/deployment_spec.rb'
 
 Metrics/ClassLength:
   Exclude:
