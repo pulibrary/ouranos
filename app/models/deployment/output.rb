@@ -24,8 +24,8 @@ class Deployment
 
     def update
       api.edit_gist(gist.id, update_params)
-    rescue Octokit::UnprocessableEntity
-      Rails.logger.info "Unable to update #{gist.id}, shit's fucked up."
+    rescue Octokit::UnprocessableEntity => entity_error
+      Rails.logger.info "Unable to update #{gist.id}: #{entity_error}"
     rescue StandardError => e
       Rails.logger.info "Unable to update #{gist.id}, #{e.class.name} - #{e.message}."
     end

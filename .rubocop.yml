@@ -27,6 +27,7 @@ Metrics/BlockLength:
     - 'spec/requests/events_spec.rb'
     - 'spec/requests/site_spec.rb'
     - 'spec/services/environment_locker_spec.rb'
+    - 'spec/models/deployment/output_spec.rb'
 
 Metrics/ClassLength:
   Exclude:
