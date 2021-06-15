@@ -30,6 +30,7 @@ Metrics/BlockLength:
     - 'spec/models/deployment/output_spec.rb'
     - 'spec/lib/ouranos/jobs/deployment_spec.rb'
     - 'spec/models/deployment/status_spec.rb'
+    - 'spec/lib/ouranos/jobs/locked_error_spec.rb'
 
 Metrics/ClassLength:
   Exclude:

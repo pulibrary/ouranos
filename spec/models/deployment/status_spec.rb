@@ -23,8 +23,22 @@ describe Deployment::Status, type: :model do
   end
 
   describe '.deliveries' do
+    before do
+      allow(Ouranos).to receive(:testing?).and_return(true)
+      status.pending!
+    end
+
+    after do
+      allow(Ouranos).to receive(:testing?).and_return(false)
+    end
+
     it 'accesses the delivery objects' do
-      expect(described_class.deliveries).to be_empty
+      expect(described_class.deliveries).to be_an(Array)
+      expect(described_class.deliveries.last).to be_a(Hash)
+      expect(described_class.deliveries.last).to include(
+        "description" => "Deploying from Ouranos v1.0.0",
+        "status" => "pending"
+      )
     end
   end
 
@@ -79,7 +93,7 @@ describe Deployment::Status, type: :model do
       it 'appends more delivery payloads' do
         status.pending!
 
-        expect(described_class.deliveries).to eq([payload])
+        expect(described_class.deliveries).to include(payload)
       end
     end
   end
