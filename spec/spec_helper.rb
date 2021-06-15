@@ -5,6 +5,12 @@
 # this file to always be loaded, without a need to explicitly require it in any
 # files.
 
+# Without this, the following error is encountered:
+# uninitialized constant RSpec::Support::Differ
+# rubocop:disable Lint/Void
+RSpec::Support::Differ
+# rubocop:enable Lint/Void
+
 require 'database_cleaner/active_record'
 require 'pry-byebug'
 require 'simplecov'
