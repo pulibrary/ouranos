@@ -22,10 +22,14 @@ Metrics/BlockLength:
     - 'spec/lib/ouranos/comparison/linked_spec.rb'
     - 'spec/lib/ouranos/notifier/slack_spec.rb'
     - 'spec/lib/ouranos/provider/default_provider_spec.rb'
-    - 'spec/requests/events_spec.rb'
-    - 'spec/services/environment_locker_spec.rb'
-    - 'spec/requests/site_spec.rb'
     - 'spec/controllers/concerns/webhook_validations_spec.rb'
+    - 'spec/receivers/lock_receiver_spec.rb'
+    - 'spec/requests/events_spec.rb'
+    - 'spec/requests/site_spec.rb'
+    - 'spec/services/environment_locker_spec.rb'
+    - 'spec/models/deployment/output_spec.rb'
+    - 'spec/lib/ouranos/jobs/deployment_spec.rb'
+    - 'spec/models/deployment/status_spec.rb'
 
 Metrics/ClassLength:
   Exclude:
@@ -52,7 +56,9 @@ RSpec/ExampleLength:
     - 'spec/lib/ouranos/notifier/slack_spec.rb'
     - 'spec/lib/ouranos/comparison/default_spec.rb'
     - 'spec/lib/ouranos/comparison/linked_spec.rb'
+    - 'spec/receivers/lock_receiver_spec.rb'
     - 'spec/services/environment_locker_spec.rb'
+    - 'spec/models/deployment/status_spec.rb'
 
 RSpec/VerifiedDoubles:
   Exclude:

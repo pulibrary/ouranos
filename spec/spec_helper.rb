@@ -21,6 +21,7 @@ SimpleCov.coverage_dir(File.join(ENV["CIRCLE_ARTIFACTS"], "coverage")) if ENV["C
 SimpleCov.start "rails" do
   add_filter "app/mailers/application_mailer.rb"
   add_filter "config"
+  add_filter "lib/ouranos/version.rb"
   add_filter "spec"
 end
 
