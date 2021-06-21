@@ -32,6 +32,7 @@ Metrics/BlockLength:
     - 'spec/models/deployment/status_spec.rb'
     - 'spec/lib/ouranos/jobs/locked_error_spec.rb'
     - 'spec/receivers/receiver_spec.rb'
+    - 'spec/lib/ouranos/provider/shell_spec.rb'
 
 Metrics/ClassLength:
   Exclude:
@@ -62,6 +63,7 @@ RSpec/ExampleLength:
     - 'spec/services/environment_locker_spec.rb'
     - 'spec/models/deployment/status_spec.rb'
     - 'spec/receivers/receiver_spec.rb'
+    - 'spec/lib/ouranos/provider/shell_spec.rb'
 
 RSpec/VerifiedDoubles:
   Exclude:

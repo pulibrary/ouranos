@@ -19,7 +19,8 @@ module Ouranos
         @guid        = guid
         @name        = 'unknown'
         @data        = data
-        @credentials = ::Deployment::Credentials.new(working_directory)
+
+        @credentials = Deployment::Credentials.new(working_directory)
       end
 
       def output

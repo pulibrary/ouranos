@@ -11,14 +11,16 @@ module Ouranos
       end
 
       def execute
-        return execute_and_log(['/usr/bin/true']) if Rails.env.test?
+        # return execute_and_log(['/usr/bin/true']) if Rails.env.test?
 
         unless File.exist?(checkout_directory)
           log "Cloning #{repository_url} into #{checkout_directory}"
+          # binding.pry
           execute_and_log(['git', 'clone', clone_url, checkout_directory])
         end
 
         Dir.chdir(checkout_directory) do
+          # binding.pry
           log 'Fetching the latest code'
           execute_and_log(%w[git fetch])
           execute_and_log(['git', 'reset', '--hard', sha])

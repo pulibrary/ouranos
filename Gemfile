@@ -38,6 +38,7 @@ group :development, :test do
   gem 'database_cleaner-active_record'
   gem 'pry-byebug'
   gem 'rspec-rails'
+  gem 'rspec-support'
   gem 'simplecov'
   gem 'webmock'
 end
@@ -69,6 +70,7 @@ gem 'capistrano-passenger'
 gem 'capistrano-rails'
 gem 'capistrano-rails-console'
 gem 'octokit'
+gem "posix-spawn"
 gem 'resque'
 gem 'resque-lock-timeout'
 gem 'slack-notifier'

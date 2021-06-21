@@ -5,8 +5,7 @@ module LocalLogFile
   include DeploymentTimeout
 
   def working_directory
-    @working_directory ||= "/tmp/" + \
-                           Digest::SHA1.hexdigest([name_with_owner, github_token].join)
+    @working_directory ||= working_directory_path.to_s
   end
 
   def checkout_directory
@@ -55,5 +54,23 @@ module LocalLogFile
 
   def terminate_child_process_on_timeout
     ENV["TERMINATE_CHILD_PROCESS_ON_TIMEOUT"] == "1"
+  end
+
+  private
+
+  def working_directory_payload
+    [name_with_owner, github_token].join
+  end
+
+  def working_directory_name
+    Digest::SHA1.hexdigest(working_directory_payload)
+  end
+
+  def working_directory_path
+    @working_directory_path ||= begin
+                                  value = File.join(Dir.mktmpdir, working_directory_name)
+                                  FileUtils.mkdir(value) unless File.directory?(value)
+                                  value
+                                end
   end
 end
