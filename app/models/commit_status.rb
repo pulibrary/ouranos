@@ -46,7 +46,7 @@ class CommitStatus
     return unless successful?
     if default_branch?
       Deployment.latest_for_name_with_owner(name_with_owner).each do |deployment|
-        Rails.logger.info "tryna deploy #{name_with_owner}@#{sha} to #{deployment.environment}"
+        Rails.logger.info "trying to deploy #{name_with_owner}@#{sha} to #{deployment.environment}"
         AutoDeployment.new(deployment, self).execute
       end
     else
