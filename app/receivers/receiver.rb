@@ -39,11 +39,11 @@ class Receiver
   def run_deployment!
     return if LockReceiver.new(data).run!
 
-    if Heaven::Jobs::Deployment.locked?(guid, data)
-      Rails.logger.info "Deployment locked for: #{Heaven::Jobs::Deployment.identifier(guid, data)}"
-      Resque.enqueue(Heaven::Jobs::LockedError, guid, data)
+    if Ouranos::Jobs::Deployment.locked?(guid, data)
+      Rails.logger.info "Deployment locked for: #{Ouranos::Jobs::Deployment.identifier(guid, data)}"
+      Resque.enqueue(Ouranos::Jobs::LockedError, guid, data)
     else
-      Resque.enqueue(Heaven::Jobs::Deployment, guid, data)
+      Resque.enqueue(Ouranos::Jobs::Deployment, guid, data)
     end
   end
 
@@ -51,9 +51,9 @@ class Receiver
     if event == "deployment"
       run_deployment!
     elsif event == "deployment_status"
-      Resque.enqueue(Heaven::Jobs::DeploymentStatus, data)
+      Resque.enqueue(Ouranos::Jobs::DeploymentStatus, data)
     elsif event == "status"
-      Resque.enqueue(Heaven::Jobs::Status, guid, data)
+      Resque.enqueue(Ouranos::Jobs::Status, guid, data)
     else
       Rails.logger.info "Unhandled event type, #{event}."
     end

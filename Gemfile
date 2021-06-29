@@ -69,6 +69,7 @@ gem 'capistrano-passenger'
 gem 'capistrano-rails'
 gem 'capistrano-rails-console'
 gem 'octokit'
+gem "posix-spawn"
 gem 'resque'
 gem 'resque-lock-timeout'
 gem 'slack-notifier'
