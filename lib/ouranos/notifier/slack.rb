@@ -8,13 +8,12 @@ module Ouranos
     # A notifier for Slack
     class Slack < Notifier::Default
       def deliver(message)
-        output_message   = ''
         filtered_message = slack_formatted(message)
 
         Rails.logger.info "slack: #{filtered_message}"
         Rails.logger.info "message: #{message}"
 
-        output_message << "##{deployment_number} - #{repo_name} / #{ref} / #{environment}"
+        output_message = "##{deployment_number} - #{repo_name} / #{ref} / #{environment}"
         slack_account.ping '',
                            channel: "##{chat_room}",
                            username: slack_bot_name,
@@ -45,7 +44,7 @@ module Ouranos
       end
 
       def slack_formatted(message)
-        ::Slack::Notifier::LinkFormatter.format(message)
+        ::Slack::Notifier::Util::LinkFormatter.format(message)
       end
 
       def changes

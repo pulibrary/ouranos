@@ -77,6 +77,7 @@ RSpec/ExampleLength:
     - 'spec/lib/ouranos/jobs/environment_unlock_spec.rb'
     - 'spec/models/deployment/credentials_spec.rb'
     - 'spec/lib/ouranos/provider/capistrano_spec.rb'
+    - 'spec/lib/ouranos/provider/default_provider_spec.rb'
 
 RSpec/VerifiedDoubles:
   Exclude:
