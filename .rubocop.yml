@@ -41,6 +41,7 @@ Metrics/BlockLength:
     - 'spec/models/auto_deployment_spec.rb'
     - 'spec/models/deployment/credentials_spec.rb'
     - 'spec/models/deployment_spec.rb'
+    - 'spec/lib/ouranos/provider/capistrano_spec.rb'
 
 Metrics/ClassLength:
   Exclude:
@@ -75,6 +76,7 @@ RSpec/ExampleLength:
     - 'spec/lib/ouranos/provider/bundler_capistrano_spec.rb'
     - 'spec/lib/ouranos/jobs/environment_unlock_spec.rb'
     - 'spec/models/deployment/credentials_spec.rb'
+    - 'spec/lib/ouranos/provider/capistrano_spec.rb'
 
 RSpec/VerifiedDoubles:
   Exclude:
