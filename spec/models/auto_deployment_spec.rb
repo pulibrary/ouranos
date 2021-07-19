@@ -101,31 +101,31 @@ describe AutoDeployment, type: :model do
   end
 
   describe '#compare' do
-    it 'derives a comparison between the base deployment and the latest commit' do
+    xit 'derives a comparison between the base deployment and the latest commit' do
     end
   end
 
   describe '#ahead?' do
-    it 'determines if the base deployment is ahead of the latest commit' do
+    xit 'determines if the base deployment is ahead of the latest commit' do
     end
   end
 
   describe '#create_deployment' do
-    it 'transmits a new payload using a POST request' do
+    xit 'transmits a new payload using a POST request' do
     end
   end
 
   describe '#execute' do
-    it 'creates a new deployment' do
+    xit 'creates a new deployment' do
     end
 
     context 'when the current deployment statuses are not all successes' do
-      it 'does not create a new deployment' do
+      xit 'does not create a new deployment' do
       end
     end
 
     context 'when the current deployment is behind the latest commit' do
-      it 'does not create a new deployment and logs a message' do
+      xit 'does not create a new deployment and logs a message' do
       end
     end
   end

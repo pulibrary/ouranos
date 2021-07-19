@@ -42,12 +42,12 @@ describe Deployment, type: :model do
   end
 
   describe '#payload' do
-    it '' do
+    xit '' do
     end
   end
 
   describe '#auto_deploy_payload' do
-    it '' do
+    xit '' do
     end
   end
 end
