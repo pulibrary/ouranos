@@ -42,6 +42,7 @@ Metrics/BlockLength:
     - 'spec/models/deployment/credentials_spec.rb'
     - 'spec/models/deployment_spec.rb'
     - 'spec/lib/ouranos/provider/capistrano_spec.rb'
+    - 'spec/lib/ouranos/notifier/default_spec.rb'
 
 Metrics/ClassLength:
   Exclude:
