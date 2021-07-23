@@ -16,9 +16,9 @@ module Ouranos
       VALID_GIT_REF = %r{\A(?!/)(?!.*(?:/\.|//|@\{|\\|\.\.))[\040-\176&&[^ ~\^:?*\[]]+(?<!\.lock|/|\.)\z}.freeze
 
       def initialize(guid, data)
-        @guid        = guid
-        @name        = 'unknown'
-        @data        = data
+        @guid = guid
+        @data = data
+        @name = 'unknown'
 
         @credentials = Deployment::Credentials.new(working_directory)
       end
@@ -89,6 +89,10 @@ module Ouranos
         data['repository']['default_branch']
       end
 
+      def owner
+        data["repository"]["owner"]["login"]
+      end
+
       def clone_url
         uri = Addressable::URI.parse(repository_url)
         uri.user = github_token
@@ -126,6 +130,10 @@ module Ouranos
         warn "Ouranos Provider(#{name}) didn't implement execute"
       end
 
+      def repository
+        Repository.find_or_create_by(name: name, owner: owner)
+      end
+
       def record
         Deployment.create(custom_payload: JSON.dump(custom_payload),
                           environment: environment,
@@ -134,7 +142,8 @@ module Ouranos
                           name_with_owner: name_with_owner,
                           output: output.url,
                           ref: ref,
-                          sha: sha)
+                          sha: sha,
+                          repository: repository)
       end
 
       def update_output
@@ -146,6 +155,7 @@ module Ouranos
 
       def notify
         update_output
+        return status.failure! if last_child.nil?
 
         last_child.success? ? status.success! : status.failure!
       end
@@ -154,7 +164,7 @@ module Ouranos
         Timeout.timeout(timeout) do
           start_deployment_timeout!
           setup
-          execute unless Rails.env.test?
+          execute
           notify
           record
         end

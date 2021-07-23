@@ -15,7 +15,7 @@ module Ouranos
 
         status.error!
 
-        Rails.logger.info 'Deployment errored out, environment was locked.'
+        Rails.logger.info('Deployment errored out, environment was locked.')
       end
     end
   end
