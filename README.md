@@ -18,10 +18,14 @@ A Capistrano-driven deployment service built using [atmos/heaven](https://github
 ### Running the App.
 
 ```bash
-bundle install
-bundle exec rails db:migrate
-bundle exec rails server
-bundle exec webpacker-dev-server
+$ bundle install
+$ bundle exec rails db:migrate
+$ bundle exec rails server
+```
+
+Then, within another terminal, please invoke the following:
+```bash
+$ bundle exec webpacker-dev-server
 ```
 
 ## Development
@@ -29,12 +33,37 @@ bundle exec webpacker-dev-server
 ### Lint using RuboCop
 
 ```bash
-bundle exec rubocop
+$ bundle exec rubocop
 ```
 
 ### Executing the Ruby Test Suites
 
 ```bash
-RAILS_ENV=test bundle exec rails db:migrate
-bundle exec rspec
+$ RAILS_ENV=test bundle exec rails db:migrate
+$ bundle exec rspec
 ```
+
+## Deployment
+
+In order to deploy the Rails app. to the `staging` environment, please invoke:
+```bash
+$ bundle exec cap staging deploy
+```
+
+### Deploying using Vagrant
+
+#### Dependencies
+
+ * [Vagrant](https://www.vagrantup.com/downloads) 2.2.17 (or later)
+ * [VirtualBox](https://www.virtualbox.org/wiki/Downloads) 6.1.24 (or later)
+
+```bash
+$ cd vagrant
+$ vagrant up
+```
+
+Then, within another terminal, please invoke the following:
+```bash
+$ bundle exec cap development deploy
+```
+
