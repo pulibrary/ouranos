@@ -1,4 +1,3 @@
-# frozen_string_literal: true
 # server-based syntax
 # ======================
 # Defines a single server with a list of roles and multiple properties.
@@ -7,7 +6,7 @@
 # server "example.com", user: "deploy", roles: %w{app db web}, my_property: :my_value
 # server "example.com", user: "deploy", roles: %w{app web}, other_property: :other_value
 # server "db.example.com", user: "deploy", roles: %w{db}
-server "ouranos1.princeton.edu", user: "deploy", roles: %w{app db web}
+server "localhost", user: "vagrant", roles: %w{app db web}
 
 # role-based syntax
 # ==================
@@ -31,7 +30,38 @@ server "ouranos1.princeton.edu", user: "deploy", roles: %w{app db web}
 # http://capistranorb.com/documentation/getting-started/configuration/
 # Feel free to add new variables to customise your setup.
 
+set :pty, true
+set :default_shell, '/bin/bash --login'
+set :shell, '/bin/bash --login'
 
+SSHKit.config.command_map[:ruby] = "/home/vagrant/.rvm/rubies/ruby-2.7.3/bin/ruby"
+set :ruby_version, "/home/vagrant/.rvm/rubies/ruby-2.7.3/bin"
+set :default_env, {
+  'PATH' => "/home/vagrant/.rvm/rubies/ruby-2.7.3/bin/ruby:/home/vagrant/.rvm/gems/ruby-2.7.3/bin:$PATH",
+  'RUBY_VERSION' => '2.7.3',
+  'GEM_HOME'     => '/home/vagrant/.rvm/gems/ruby-2.7.3',
+  'GEM_PATH'     => '/home/vagrant/.rvm/gems/ruby-2.7.3',
+  'BUNDLE_PATH'  => '/home/vagrant/.rvm/gems/ruby-2.7.3'
+}
+
+namespace :rvm do
+  task :trust_rvmrc do
+    on roles(:all) do
+      execute "rvm rvmrc trust #{release_path}"
+    end
+  end
+end
+after "deploy", "rvm:trust_rvmrc"
+
+namespace :deploy do
+  task :load_rvm do
+    on roles(:all) do
+      execute "source /home/vagrant/.rvm/scripts/rvm"
+      SSHKit.config.command_map[:ruby] = "/home/vagrant/.rvm/rubies/ruby-2.7.3/bin/ruby"
+    end
+  end
+end
+after "deploy:updating", "deploy:load_rvm"
 
 # Custom SSH Options
 # ==================
@@ -59,3 +89,20 @@ server "ouranos1.princeton.edu", user: "deploy", roles: %w{app db web}
 #     auth_methods: %w(publickey password)
 #     # password: "please use keys"
 #   }
+
+def vagrant_key_path
+  current_path = File.expand_path(__FILE__)
+  parent_dir = File.dirname(current_path)
+  root_path = File.join(parent_dir, '..', '..', 'vagrant')
+  File.join(root_path, '.vagrant', 'machines', 'default', 'virtualbox', 'private_key')
+end
+
+server "localhost",
+  user: "vagrant",
+  roles: %w{app db web},
+  ssh_options: {
+    keys: [vagrant_key_path],
+    forward_agent: false,
+    auth_methods: %w(publickey password),
+    port: 2222
+  }
