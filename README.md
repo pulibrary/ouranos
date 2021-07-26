@@ -26,6 +26,10 @@ bundle exec webpacker-dev-server
 
 ## Development
 
+```bash
+bundle exec cap staging deploy
+```
+
 ### Lint using RuboCop
 
 ```bash
