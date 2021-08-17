@@ -13,6 +13,7 @@ describe Ouranos::Notifier::Default do
   let(:full_name) { 'atmos/heaven' }
   let(:html_url) { 'https://localhost' }
   let(:sha) { '1333c018defc50bfe123e2e7acbc83bb' }
+  let(:target_url) { 'https://gist.github.com/fa77d9fb1fe41c3bb3a3ffb2c' }
   let(:data) do
     {
       repository: {
@@ -30,7 +31,10 @@ describe Ouranos::Notifier::Default do
         sha: sha
       },
       deployment_status: {
-        state: state
+        id: 2,
+        state: state,
+        description: 'A test deployment',
+        target_url: target_url
       }
     }
   end
@@ -93,6 +97,12 @@ describe Ouranos::Notifier::Default do
       notifier = described_class.new("{}")
 
       expect(notifier.change_delivery_enabled?).to be true
+    end
+  end
+
+  describe '#deliver' do
+    it 'raises an error' do
+      expect { default_notifier.deliver("test") }.to raise_error(RuntimeError, "Unable to deliver, write your own #deliver(test) method.")
     end
   end
 
@@ -233,6 +243,32 @@ describe Ouranos::Notifier::Default do
   describe '#changes' do
     it 'generates messages from the changes committed using git' do
       expect(default_notifier.changes).to eq("Total Commits: 1\n2 Additions, 4 Deletions, 6 Changes\n\nsha by login: Another commit\nsha by login: Commit message #123")
+    end
+  end
+
+  describe '#number' do
+    it 'accesses the deployment number' do
+      expect(default_notifier.number).to eq(2)
+    end
+  end
+
+  describe '#description' do
+    it 'accesses the deployment description' do
+      expect(default_notifier.description).to eq('A test deployment')
+    end
+  end
+
+  describe '#output_link' do
+    it 'generates the arguments for linking to the output of the deployment Gists' do
+      expect(default_notifier.output_link).to eq("[deployment](https://gist.github.com/fa77d9fb1fe41c3bb3a3ffb2c)")
+    end
+
+    context 'when the `target_url` is not retrieved from the GitHub API' do
+      let(:target_url) { nil }
+
+      it 'only accesses the link label' do
+        expect(default_notifier.output_link).to eq('deployment')
+      end
     end
   end
 end
