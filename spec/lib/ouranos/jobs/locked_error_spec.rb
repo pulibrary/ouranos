@@ -45,4 +45,13 @@ RSpec.describe Ouranos::Jobs::LockedError do
       expect(logger).to have_received(:info).with('Deployment errored out, run was locked.')
     end
   end
+
+  describe '.new' do
+    subject(:locked_error) { described_class.new(guid, payload) }
+
+    it 'constructs the object with the GUID and API response payload' do
+      expect(locked_error.guid).to eq(guid)
+      expect(locked_error.payload).to eq(payload)
+    end
+  end
 end

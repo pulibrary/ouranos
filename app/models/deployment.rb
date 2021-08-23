@@ -20,10 +20,16 @@ class Deployment < ApplicationRecord
   end
 
   def payload
-    @payload ||= JSON.parse(custom_payload)
+    @payload ||= custom_payload_json.with_indifferent_access
   end
 
   def auto_deploy_payload(actor, sha)
     payload.merge(actor: actor, sha: sha)
+  end
+
+  private
+
+  def custom_payload_json
+    JSON.parse(custom_payload)
   end
 end

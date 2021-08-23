@@ -30,6 +30,7 @@ module Ouranos
       def default_message
         message = output_link("##{deployment_number}")
         message += " : #{user_link}"
+
         case state
         when 'success'
           message + "'s #{environment} deployment of #{repository_link} is done! "
