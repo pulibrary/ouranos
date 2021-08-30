@@ -312,6 +312,28 @@ describe Ouranos::Provider::DefaultProvider do
     end
   end
 
+  describe '#redis' do
+    it 'accesses the Redis client' do
+      expect(default_provider.redis).to be_a(Redis)
+    end
+  end
+
+  describe '#gem_executable_path' do
+    let(:executable_path) { default_provider.gem_executable_path("test_name") }
+    let(:capistrano_path) { Rails.root.join('bin', 'cap') }
+
+    context 'when the executable path exists' do
+      before do
+        allow(File).to receive(:exist?).and_call_original
+        allow(File).to receive(:exist?).with(capistrano_path.to_s).and_return(true)
+      end
+
+      it 'defaults to the Capistrano executable path' do
+        expect(executable_path).to eq(capistrano_path.to_s)
+      end
+    end
+  end
+
   describe "::VALID_GIT_REF" do
     it "matches master" do
       expect("master").to match(valid_git_ref)
@@ -355,6 +377,24 @@ describe Ouranos::Provider::DefaultProvider do
     end
     it "does not allow \\" do
       expect("dev\\\\branch").not_to match(valid_git_ref)
+    end
+  end
+
+  describe '#execute_options' do
+    before do
+      ENV["TERMINATE_CHILD_PROCESS_ON_TIMEOUT"] = "1"
+    end
+
+    after do
+      ENV["TERMINATE_CHILD_PROCESS_ON_TIMEOUT"] = nil
+    end
+
+    it 'builds the execution options' do
+      expect(default_provider.execute_options).to eq(
+        {
+          timeout: 298
+        }
+      )
     end
   end
 end

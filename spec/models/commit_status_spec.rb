@@ -144,6 +144,25 @@ describe CommitStatus do
       end
     end
 
+    context 'when the select branch is not the default branch' do
+      let(:default_branch_name) { 'branch2' }
+
+      let(:default_branch) do
+        {
+          'name' => 'default_branch'
+        }
+      end
+
+      before do
+        allow(Rails.logger).to receive(:info)
+        commit_status.run!
+      end
+
+      it 'does not deploy the branch and logs a message' do
+        expect(Rails.logger).to have_received(:info).with('Ignoring commit status(success) for full_name+default_branch@00997d76')
+      end
+    end
+
     it 'executes a new auto. deployment' do
       commit_status.run!
 
