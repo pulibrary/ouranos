@@ -49,21 +49,3 @@ In order to deploy the Rails app. to the `staging` environment, please invoke:
 ```bash
 $ bundle exec cap staging deploy
 ```
-
-### Deploying using Vagrant
-
-#### Dependencies
-
- * [Vagrant](https://www.vagrantup.com/downloads) 2.2.17 (or later)
- * [VirtualBox](https://www.virtualbox.org/wiki/Downloads) 6.1.24 (or later)
-
-```bash
-$ cd vagrant
-$ vagrant up
-```
-
-Then, within another terminal, please invoke the following:
-```bash
-$ bundle exec cap development deploy
-```
-
