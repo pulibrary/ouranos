@@ -16,11 +16,11 @@ module Ouranos
     end
 
     def redis
-      @redis ||= if ENV['REDIS_PROVIDER']
-                   Redis.new(url: ENV[ENV['REDIS_PROVIDER']])
-                 else
-                   Redis.new
-                 end
+      @redis = if ENV['REDIS_PROVIDER']
+                 Redis.new(url: ENV[ENV['REDIS_PROVIDER']])
+               else
+                 Redis.new
+               end
     end
 
     def redis_reconnect!

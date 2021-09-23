@@ -7,11 +7,9 @@ module Ouranos
     autoload(:Slack, Rails.root.join('lib', 'ouranos', 'notifier', 'slack'))
 
     def self.for(payload)
-      if slack?
-        ::Ouranos::Notifier::Slack.new(payload)
-      elsif Rails.env.test?
-        # noop on posting
-      end
+      return Slack.new(payload) if slack?
+
+      Default.new(payload)
     end
 
     def self.slack?

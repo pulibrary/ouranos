@@ -14,20 +14,23 @@ module Ouranos
         Rails.logger.info "message: #{message}"
 
         output_message = "##{deployment_number} - #{repo_name} / #{ref} / #{environment}"
-        slack_account.ping '',
-                           channel: "##{chat_room}",
-                           username: slack_bot_name,
-                           icon_url: slack_bot_icon,
-                           attachments: [{
-                             text: filtered_message,
-                             color: green? ? 'good' : 'danger',
-                             pretext: pending? ? output_message : ' '
-                           }]
+        slack_account.ping('',
+          channel: "##{chat_room}",
+          username: slack_bot_name,
+          icon_url: slack_bot_icon,
+          attachments: [
+            {
+              text: filtered_message,
+              color: green? ? 'good' : 'danger',
+              pretext: pending? ? output_message : ' '
+            }
+          ])
       end
 
       def default_message
         message = output_link("##{deployment_number}")
         message += " : #{user_link}"
+
         case state
         when 'success'
           message + "'s #{environment} deployment of #{repository_link} is done! "
@@ -47,8 +50,12 @@ module Ouranos
         ::Slack::Notifier::Util::LinkFormatter.format(message)
       end
 
+      def linked
+        @linked ||= Ouranos::Comparison::Linked.new(comparison, name_with_owner)
+      end
+
       def changes
-        Ouranos::Comparison::Linked.new(comparison, name_with_owner).changes(commit_change_limit)
+        linked.changes(commit_change_limit)
       end
 
       def compare_link

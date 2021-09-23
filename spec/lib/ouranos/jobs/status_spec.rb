@@ -30,4 +30,13 @@ RSpec.describe Ouranos::Jobs::Status do
       expect(commit_status).to have_received(:run!)
     end
   end
+
+  describe '.new' do
+    let(:status) { described_class.new(guid, payload) }
+
+    it 'constructs the Status object with the GUID and payload' do
+      expect(status.guid).to eq(guid)
+      expect(status.payload).to eq(payload)
+    end
+  end
 end

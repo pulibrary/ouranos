@@ -23,7 +23,7 @@ describe "Ouranos::Comparison::Linked" do
         deletions: 2,
         changes: 3
       }]
-    }.with_indifferent_access
+    }
   end
 
   describe "#changes" do

@@ -47,6 +47,12 @@ describe Ouranos::Provider::Capistrano do
       instance_double(POSIX::Spawn::Child)
     end
     let(:github_token) { ENV["GITHUB_TOKEN"] }
+    let(:deployment1) do
+      described_class.new(
+        guid,
+        data
+      )
+    end
 
     before do
       allow(last_child).to receive(:out).and_return("".dup)
@@ -55,18 +61,43 @@ describe Ouranos::Provider::Capistrano do
       allow(POSIX::Spawn::Child).to receive(:new).and_return(last_child)
       allow(Rails.logger).to receive(:info)
 
-      FileUtils.mkdir(deployment.checkout_directory)
+      FileUtils.mkdir(deployment1.checkout_directory) unless File.exist?(deployment1.checkout_directory)
     end
 
     after do
-      FileUtils.rm_rf(deployment.checkout_directory)
+      FileUtils.rm_rf(deployment1.checkout_directory)
     end
 
     it 'clones the repository into the checkout directory' do
-      deployment.execute
+      allow(File).to receive(:exist?).and_call_original
+      allow(File).to receive(:exist?).with(deployment1.checkout_directory).and_return(false)
+
+      deployment1.execute
+
+      expect(
+        POSIX::Spawn::Child
+      ).to have_received(:new).with({ "HOME" => deployment1.working_directory }, 'git', 'fetch', any_args)
 
       expect(Rails.logger).to have_received(:info).with("full_name-#{guid}: Fetching the latest code")
       expect(Rails.logger).to have_received(:info).with("full_name-#{guid}: Executing capistrano: bin/cap  deploy")
+    end
+
+    context 'when the checkout directory already exists' do
+      before do
+        FileUtils.mkdir(deployment.checkout_directory) unless File.exist?(deployment.checkout_directory)
+      end
+
+      after do
+        FileUtils.rm_rf(deployment.checkout_directory)
+      end
+
+      it 'does not clone the git repository' do
+        deployment.execute
+
+        expect(POSIX::Spawn::Child).to have_received(:new).with({ "HOME" => deployment.working_directory }, 'git', 'fetch', {})
+        expect(Rails.logger).to have_received(:info).with("full_name-#{guid}: Fetching the latest code").at_least(:once)
+        expect(Rails.logger).to have_received(:info).with("full_name-#{guid}: Executing capistrano: bin/cap  deploy").at_least(:once)
+      end
     end
   end
 end

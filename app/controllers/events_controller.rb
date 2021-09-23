@@ -27,21 +27,11 @@ class EventsController < ApplicationController
 
   private
 
-  def request_form_params
-    request.headers[Rack::RACK_REQUEST_FORM_HASH]
-  end
-
-  def request_form_headers
-    request_form_params["headers"]
-  end
-
   def event
-    # request_form_headers[GITHUB_EVENT_HEADER]
     request.headers[GITHUB_EVENT_HEADER]
   end
 
   def delivery
-    # request_form_headers[GITHUB_DELIVERY_HEADER]
     request.headers[GITHUB_DELIVERY_HEADER]
   end
 

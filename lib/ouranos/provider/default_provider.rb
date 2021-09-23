@@ -155,9 +155,6 @@ module Ouranos
 
       def notify
         update_output
-        return status.failure! if last_child.nil?
-
-        last_child.success? ? status.success! : status.failure!
       end
 
       def run!
@@ -168,13 +165,10 @@ module Ouranos
           notify
           record
         end
-      rescue POSIX::Spawn::TimeoutExceeded, Timeout::Error => e
-        Rails.logger.info e.message
-        Rails.logger.info e.backtrace
-        output.stderr += "\n\nDEPLOYMENT TIMED OUT AFTER #{timeout} SECONDS"
-      rescue StandardError => e
-        Rails.logger.info e.message
-        Rails.logger.info e.backtrace
+      rescue StandardError => error
+        Rails.logger.info(error.message)
+        Rails.logger.info(error.backtrace)
+        output.stderr += "\n\nDEPLOYMENT TIMED OUT AFTER #{timeout} SECONDS" if error.is_a?(POSIX::Spawn::TimeoutExceeded) || error.is_a?(Timeout::Error)
       ensure
         update_output
         status.failure! unless completed?

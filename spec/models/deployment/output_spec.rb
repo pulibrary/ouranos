@@ -57,6 +57,21 @@ describe Deployment::Output, type: :model do
         expect(logger).to have_received(:info).with("Unable to update #{gist_id}: Octokit::UnprocessableEntity")
       end
     end
+
+    context 'when any generic error is encountered' do
+      let(:logger) { instance_double(ActiveSupport::Logger) }
+
+      before do
+        allow(logger).to receive(:info)
+        allow(Rails).to receive(:logger).and_return(logger)
+        allow(client).to receive(:edit_gist).and_raise(StandardError)
+      end
+
+      it 'logs an error message' do
+        output.update
+        expect(logger).to have_received(:info).with("Unable to update #{gist_id}, StandardError - StandardError")
+      end
+    end
   end
 
   describe '#url' do

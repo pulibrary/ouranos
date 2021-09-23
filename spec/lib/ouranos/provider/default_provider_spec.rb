@@ -21,10 +21,12 @@ describe Ouranos::Provider::DefaultProvider do
         'environment' => environment,
         'sha' => sha,
         'ref' => ref,
+        'description' => 'a test deployment',
         'payload' => {
           'config' => {
             'deploy_script' => 'deploy.sh'
-          }
+          },
+          'name' => 'test-provider'
         }
       },
       'repository' => {
@@ -67,9 +69,6 @@ describe Ouranos::Provider::DefaultProvider do
           }
         }
       }
-    end
-    let(:last_child) do
-      instance_double(POSIX::Spawn::Child)
     end
 
     before do
@@ -171,17 +170,22 @@ describe Ouranos::Provider::DefaultProvider do
             status: 200,
             body: JSON.generate(gist_response)
           )
-
-      default_provider.run!
     end
+    let(:custom_payload) do
+      {
+        'config' => {
+          'deploy_script' => 'deploy.sh'
+        },
+        'name' => 'test-provider'
+      }
+    end
+    let(:custom_payload_json) { JSON.generate(custom_payload) }
 
     it 'runs the provider' do
+      default_provider.run!
+
       expect(Deployment.all).not_to be_empty
-      expect(Deployment.last.custom_payload).to eq(
-        JSON.generate('config' => {
-                        'deploy_script' => 'deploy.sh'
-                      })
-      )
+      expect(Deployment.last.custom_payload).to eq(custom_payload_json)
       expect(Deployment.last.environment).to eq(environment)
       expect(Deployment.last.guid).to eq(guid)
       expect(Deployment.last.name).to eq(full_name)
@@ -189,6 +193,68 @@ describe Ouranos::Provider::DefaultProvider do
       expect(Deployment.last.output).to eq("https://github.com/pulibrary/ouranos")
       expect(Deployment.last.ref).to eq(ref)
       expect(Deployment.last.sha).to eq("96ea9a5d")
+    end
+
+    context 'when an error is encountered due to a server timeout' do
+      let(:credentials) { instance_double(Deployment::Credentials) }
+      let(:patch_api_gist_request_body) do
+        {
+          files: {
+            stderr: {
+              content: "\n\nDEPLOYMENT TIMED OUT AFTER 300 SECONDS"
+            }
+          },
+          public: false
+        }
+      end
+      let(:patch_api_gist_response_body_json) do
+        JSON.generate(patch_api_gist_request_body)
+      end
+      let(:post_api_status_request_body) do
+        {
+          target_url: nil,
+          description: "Deploying from Ouranos v1.0.0",
+          state: "failure"
+        }
+      end
+      let(:post_api_status_request_body_json) do
+        JSON.generate(post_api_status_request_body)
+      end
+
+      before do
+        stub_request(:post, "https://api.github.com/repos/pulibrary/ouranos/status")
+          .with(
+            body: post_api_status_request_body_json,
+            headers: {
+              'Accept' => 'application/vnd.github.v3+json',
+              'Authorization' => 'token <unknown>',
+              'Content-Type' => 'application/json'
+            }
+          )
+          .to_return(status: 200)
+
+        stub_request(:patch, "https://api.github.com/gists/gist-id")
+          .with(
+            body: patch_api_gist_response_body_json,
+            headers: {
+              'Accept' => 'application/vnd.github.v3+json',
+              'Authorization' => 'token <unknown>',
+              'Content-Type' => 'application/json'
+            }
+          )
+          .to_return(status: 200)
+
+        allow(credentials).to receive(:setup!).and_raise(POSIX::Spawn::TimeoutExceeded, 'TimeoutExceeded error message')
+        allow(Deployment::Credentials).to receive(:new).and_return(credentials)
+        allow(Rails.logger).to receive(:info)
+      end
+
+      it 'logs the error and updates the output with an error warning' do
+        default_provider.run!
+
+        expect(Deployment.all).to be_empty
+        expect(Rails.logger).to have_received(:info).with('TimeoutExceeded error message')
+      end
     end
   end
 
@@ -213,6 +279,58 @@ describe Ouranos::Provider::DefaultProvider do
   describe "#start_deployment_timeout!" do
     it 'accesses the timeout period for starting the deployment' do
       expect(default_provider.start_deployment_timeout!).to eq(time)
+    end
+  end
+
+  describe '#description' do
+    it 'accesses description for the provider' do
+      expect(default_provider.description).to eq('a test deployment')
+    end
+  end
+
+  describe '#repository_url' do
+    it 'accesses the git repository URL' do
+      expect(default_provider.repository_url).to eq('git://localhost.localdomain/invalid')
+    end
+  end
+
+  describe '#default_branch' do
+    it 'accesses the default git repository branch' do
+      expect(default_provider.default_branch).to eq('default_branch')
+    end
+  end
+
+  describe '#clone_url' do
+    it 'accesses the URL for the `git clone` invocation' do
+      expect(default_provider.clone_url).to eq('git://<unknown>:@localhost.localdomain/invalid')
+    end
+  end
+
+  describe '#custom_payload_name' do
+    it 'accesses the name from the parsed payload invoked with the constructor' do
+      expect(default_provider.custom_payload_name).to eq('test-provider')
+    end
+  end
+
+  describe '#redis' do
+    it 'accesses the Redis client' do
+      expect(default_provider.redis).to be_a(Redis)
+    end
+  end
+
+  describe '#gem_executable_path' do
+    let(:executable_path) { default_provider.gem_executable_path("test_name") }
+    let(:capistrano_path) { Rails.root.join('bin', 'cap') }
+
+    context 'when the executable path exists' do
+      before do
+        allow(File).to receive(:exist?).and_call_original
+        allow(File).to receive(:exist?).with(capistrano_path.to_s).and_return(true)
+      end
+
+      it 'defaults to the Capistrano executable path' do
+        expect(executable_path).to eq(capistrano_path.to_s)
+      end
     end
   end
 
@@ -259,6 +377,24 @@ describe Ouranos::Provider::DefaultProvider do
     end
     it "does not allow \\" do
       expect("dev\\\\branch").not_to match(valid_git_ref)
+    end
+  end
+
+  describe '#execute_options' do
+    before do
+      ENV["TERMINATE_CHILD_PROCESS_ON_TIMEOUT"] = "1"
+    end
+
+    after do
+      ENV["TERMINATE_CHILD_PROCESS_ON_TIMEOUT"] = nil
+    end
+
+    it 'builds the execution options' do
+      expect(default_provider.execute_options).to eq(
+        {
+          timeout: 298
+        }
+      )
     end
   end
 end

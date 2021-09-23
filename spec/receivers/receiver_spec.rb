@@ -8,14 +8,17 @@ RSpec.describe Receiver do
   let(:full_name) { 'full_name' }
   let(:login) { 'login' }
   let(:payload_name) { 'payload_name' }
+  let(:payload_repository) do
+    {
+      "full_name" => full_name,
+      "owner" => {
+        "login" => login
+      }
+    }
+  end
   let(:data) do
     {
-      "repository" => {
-        "full_name" => full_name,
-        "owner" => {
-          "login" => login
-        }
-      },
+      "repository" => payload_repository,
       "deployment" => {
         "creator" => {
           "login" => login
@@ -27,7 +30,6 @@ RSpec.describe Receiver do
       }
     }
   end
-  # %w[deployment deployment_status status ping]
   let(:event) { 'deployment' }
 
   describe '#full_name' do
@@ -58,6 +60,14 @@ RSpec.describe Receiver do
         expect(receiver.active_repository?).to be false
       end
     end
+
+    context 'when a repository is not specified within the payload' do
+      let(:payload_repository) { nil }
+
+      it 'indicates that the repository is not active' do
+        expect(receiver.active_repository?).to be false
+      end
+    end
   end
 
   describe '#run_deployment!' do
@@ -65,7 +75,6 @@ RSpec.describe Receiver do
     let(:logger) { instance_double(ActiveSupport::Logger) }
 
     before do
-      # allow(lock_receiver).to receive(:run!)
       allow(LockReceiver).to receive(:new).and_return(lock_receiver)
     end
 

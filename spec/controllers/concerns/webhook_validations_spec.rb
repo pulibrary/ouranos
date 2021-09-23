@@ -52,4 +52,20 @@ describe WebhookValidations do
     tester2 = WebhookValidationsTester.new("127.1.1.255")
     expect(tester2).not_to be_valid_incoming_webhook_address
   end
+
+  describe '#valid_incoming_webhook_address?' do
+    context 'when the GitHub API client uses a custom URL' do
+      before do
+        allow(Octokit).to receive(:api_endpoint).and_return('https://gitlab.local')
+      end
+
+      it 'determines the webhook address to be valid' do
+        tester1 = WebhookValidationsTester.new(remote_ip)
+        expect(tester1).to be_valid_incoming_webhook_address
+
+        tester2 = WebhookValidationsTester.new("127.1.1.255")
+        expect(tester2).to be_valid_incoming_webhook_address
+      end
+    end
+  end
 end

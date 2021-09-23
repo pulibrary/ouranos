@@ -6,8 +6,8 @@ module Ouranos
   module Notifier
     # The class that all notifiers inherit from
     class Default
-      DISPLAY_COMMITS_KEY       = 'HEAVEN_NOTIFIER_DISPLAY_COMMITS'
-      DISPLAY_COMMITS_LIMIT_KEY = 'HEAVEN_NOTIFIER_DISPLAY_COMMITS_LIMIT'
+      DISPLAY_COMMITS_KEY       = 'OURANOS_NOTIFIER_DISPLAY_COMMITS'
+      DISPLAY_COMMITS_LIMIT_KEY = 'OURANOS_NOTIFIER_DISPLAY_COMMITS_LIMIT'
 
       include ApiClient
 
@@ -81,10 +81,6 @@ module Ouranos
         deployment['environment']
       end
 
-      def task
-        deployment['task']
-      end
-
       def sha
         deployment['sha'][0..7]
       end
@@ -99,6 +95,10 @@ module Ouranos
 
       def deployment_payload
         @deployment_payload ||= deployment['payload']
+      end
+
+      def task
+        deployment_payload['task']
       end
 
       def chat_user
@@ -130,7 +130,8 @@ module Ouranos
       end
 
       def default_message
-        message = user_link
+        message = user_link.dup
+
         case state
         when 'success'
           message << "'s #{environment} deployment of #{repository_link} is done! "
@@ -154,7 +155,11 @@ module Ouranos
       end
 
       def comparison
-        @comparison ||= api.compare(name_with_owner, last_known_revision, sha).as_json
+        @comparison ||= begin
+                          response = api.compare(name_with_owner, last_known_revision, sha)
+                          json_response = response.to_h
+                          json_response.as_json
+                        end
       end
 
       def last_known_revision
